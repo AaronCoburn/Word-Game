@@ -1,64 +1,62 @@
-const dictionary = ['earth', 'place', 'crack', 'audio', 'mouse', 'black', 'shake', 'fonts'];
-const totalGuess = 3
-const state = {
+const dictionary = [ 'auger', 'agree', 'snack', 'smack', 'smile', 'wings', 'sands', 'prawn', 'price', 'drink', 'brick', 'spite','brink', 'snake', 'glade', 'crown', 'aloud', 'brown' , 'stunt', 'brine', 'about', 'above', 'spade', 'verts', 'bless', 'shark', 'blood', 'scrap', 'snale', 'brake', 'cloud', 'marks', 'house', 'earth', 'plant', 'plans', 'plain', 'place', 'crack', 'peace', 'plane', 'gains', 'greet', 'great', 'greed', 'pains', 'jumps', 'trees', 'weeps', 'audio', 'mouse', 'speak', 'month', 'rakes', 'lives', 'black', 'shake', 'fonts', 'space', 'spice', 'slack', 'sound', 'speed', 'spike', 'spine', 'spins', 'swims', 'slice', 'sweet'];
+// create a blank state to work with and update. UI start
+const wordleGameState = {
     secret: dictionary[Math.floor(Math.random() * dictionary.length)],
-    grid: Array(6)
+    gridFillArrays: Array(7)
         .fill()
         .map(() => Array(5).fill('')),
     currentRow: 0,
-    currentCol: 0,
+    currentColumn: 0,
 };
+// Draw and append the grid to the containing boundery
+function drawWordleGameGrid(containingTiles) {
+    const gridFillArrays = document.createElement('div');
+    gridFillArrays.className = 'grid';
 
-function drawGrid(container) {
-    const grid = document.createElement('div');
-    grid.className = 'grid';
-
-    for (let i = 0; i < 6; i++) {
-        for (let j = 0; j < 5; j++) {
-            drawBox(grid, i, j);
+    for (let gridSqaureHorizontal = 0; gridSqaureHorizontal < 7; gridSqaureHorizontal++) {
+        for (let gridSqaureVertical = 0; gridSqaureVertical < 5; gridSqaureVertical++) {
+            drawLetterTiles(gridFillArrays, gridSqaureHorizontal, gridSqaureVertical);
         }
     }
 
-    container.appendChild(grid);
+    containingTiles.appendChild(gridFillArrays);
 }
-
-function updateGrid() {
-    for (let i = 0; i < state.grid.length; i++) {
-        for (let j = 0; j < state.grid[i].length; j++) {
-            const box = document.getElementById(`box${i}${j}`);
-            box.textContent = state.grid[i][j];
+// Keeps the data and the UI updated so nothing out of sync, setting content to whats in state
+function updateWordleGameLetters() {
+    for (let gridSqaureHorizontal = 0; gridSqaureHorizontal < wordleGameState.gridFillArrays.length; gridSqaureHorizontal++) {
+        for (let gridSqaureVertical = 0; gridSqaureVertical < wordleGameState.gridFillArrays[gridSqaureHorizontal].length; gridSqaureVertical++) {
+            const letterTile = document.getElementById(`letterTile${gridSqaureHorizontal}${gridSqaureVertical}`);
+            letterTile.textContent = wordleGameState.gridFillArrays[gridSqaureHorizontal][gridSqaureVertical];
         }
     }
 }
+// Draw The Letter to the Tiles
+function drawLetterTiles(containingTiles, row, column, letter = '') {
+    const letterTile = document.createElement('div');
+    letterTile.className = 'letterTile';
+    letterTile.textContent = letter;
+    letterTile.id = `letterTile${row}${column}`;
 
-function drawBox(container, row, col, letter = '') {
-    const box = document.createElement('div');
-    box.className = 'box';
-    box.textContent = letter;
-    box.id = `box${row}${col}`;
-
-    container.appendChild(box);
-    return box;
+    containingTiles.appendChild(letterTile);
+    return letterTile;
 }
-
+// Create keyboard input
 function registerKeyboardEvents() {
     document.body.onkeydown = (e) => {
         const key = e.key;
         if (key === 'Enter') {
-            if (state.currentCol === 0){
+            if (wordleGameState.currentColumn === 0){
                 alert('Please guess a 5 letter word by typing with the keyboard');
-                totalGuess--
             }
-            if (state.currentCol <= 4){
+            if (wordleGameState.currentColumn <= 4){
                 alert('Please type a full 5 letter word');
-                totalGuess--
             }
-            if (state.currentCol === 5) {
-                const word = getCurrentWord();
-                if (isWordValid(word)) {
-                    revealWord(word);
-                    state.currentRow++;
-                    state.currentCol = 0;
+            if (wordleGameState.currentColumn === 5) {
+                const dictionaryWord = collectsCurrentWord();
+                if (isWordValid(dictionaryWord)) {
+                    revealIfDictionaryWord(dictionaryWord);
+                    wordleGameState.currentRow++;
+                    wordleGameState.currentColumn = 0;
                 } else {
                     alert('Not a valid word.');
                 }
@@ -71,73 +69,75 @@ function registerKeyboardEvents() {
             addLetter(key);
         }
 
-        updateGrid();
+        updateWordleGameLetters();
     };
 }
-
-function getCurrentWord() {
-    return state.grid[state.currentRow].reduce((prev, curr) => prev + curr);
+// Used to collect the letters in the row to form a word
+function collectsCurrentWord() {
+    return wordleGameState.gridFillArrays[wordleGameState.currentRow].reduce((previous, current) => previous + current);
 }
-
-function isWordValid(word) {
-    return dictionary.includes(word);
+// Return if word is in the dictionary
+function isWordValid(dictionaryWord) {
+    return dictionary.includes(dictionaryWord);
 }
+// check all letters in row and shows if they are in the correct position
+function revealIfDictionaryWord(guess) {
+    const row = wordleGameState.currentRow;
+    const animationDuration = 500; // ms
 
-function revealWord(guess) {
-    const row = state.currentRow;
-    const animation_duration = 500; // ms
-
-    for (let i = 0; i < 5; i++) {
-        const box = document.getElementById(`box${row}${i}`);
-        const letter = box.textContent;
+    for (let gridSqaureHorizontal = 0; gridSqaureHorizontal < 5; gridSqaureHorizontal++) {
+        const letterTile = document.getElementById(`letterTile${row}${gridSqaureHorizontal}`);
+        const letter = letterTile.textContent;
 
         setTimeout(() => {
-            if (letter === state.secret[i]) {
-                box.classList.add('right');
-            } else if (state.secret.includes(letter)) {
-                box.classList.add('wrong');
+            if (letter === wordleGameState.secret[gridSqaureHorizontal]) {
+                letterTile.classList.add('right');
+            } else if (wordleGameState.secret.includes(letter)) {
+                letterTile.classList.add('wrong');
             } else {
-                box.classList.add('empty');
+                letterTile.classList.add('empty');
             }
-        }, ((i + 1) * animation_duration) / 2);
+        }, ((gridSqaureHorizontal + 1) * animationDuration) / 2);
 
-        box.classList.add('animated');
-        box.style.animationDelay = `${(i * animation_duration) / 3}ms`;
+        letterTile.classList.add('animated');
+        letterTile.style.animationDelay = `${(gridSqaureHorizontal * animationDuration) / 2}ms`;
     }
 
-    const isWinner = state.secret === guess;
-    const isGameOver = state.currentRow === 7;
+    const isWinner = wordleGameState.secret === guess;
+    const isGameOver = wordleGameState.currentRow === 7 - 1
 
     setTimeout(() => {
         if (isWinner) {
             alert('Congratulations!');
         } else if (isGameOver) {
-            alert(`Better luck next time! The word was ${state.secret}.`);
+            alert(`Better luck next time! The word was ${wordleGameState.secret}.`);
         }
-    }, 3 * animation_duration);
+    }, 3 * animationDuration);
 }
-
+// checks and returns if key is a pressed letter (from a to z upper or lowercase)
 function isLetter(key) {
     return key.length === 1 && key.match(/[a-z]/i);
 }
-
+// Adds the letter to the current tile and incs column.
 function addLetter(letter) {
-    if (state.currentCol === 5) return;
-    state.grid[state.currentRow][state.currentCol] = letter;
-    state.currentCol++;
+    if (wordleGameState.currentColumn === 5) return;
+    wordleGameState.gridFillArrays[wordleGameState.currentRow][wordleGameState.currentColumn] = letter;
+    wordleGameState.currentColumn++;
 }
-
+// deletes the letter to the current tile and decs column.
 function removeLetter() {
-    if (state.currentCol === 0) return;
-    state.grid[state.currentRow][state.currentCol - 1] = '';
-    state.currentCol--;
+    if (wordleGameState.currentColumn === 0) return;
+    wordleGameState.gridFillArrays[wordleGameState.currentRow][wordleGameState.currentColumn - 1] = '';
+    wordleGameState.currentColumn--;
 }
 
 function startup() {
     const game = document.getElementById('game');
-    drawGrid(game);
+    drawWordleGameGrid(game);
 
     registerKeyboardEvents();
+
+    console.log(wordleGameState.secret)
 }
 
 startup();

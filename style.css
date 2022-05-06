@@ -6,8 +6,8 @@ body {
 :root {
     --default: #121213;
     --empty: #3a3a3c;
-    --wrong: #b59f3b;
-    --right: #538d4e;
+    --wrong: hsl(0, 100%, 50%);
+    --right: #13ac05;
 }
 
 #game {
@@ -17,15 +17,32 @@ body {
     height: 600px;
 }
 
-.grid {
-    display: grid;
-    grid-template-rows: repeat(6, auto);
-    grid-template-columns: repeat(5, auto);
+.message-container{
+    width: auto;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    /* margin: 0.1rem 1rem; */
 }
 
-.box {
-    width: 60px;
-    height: 60px;
+.message-container p{
+    color: #000000;
+    background-color: rgb(116, 116, 116);
+    font-size: 3rem;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    /* margin: auto; */
+}
+
+.grid {
+    height: 100%;
+    display: grid;
+    grid-template-rows: repeat(7, auto);
+    grid-template-columns: repeat(5, auto);
+}
+/* or  */
+.letterTile { 
+    width: 5rem;
+    height: 5rem;
     border: 2px solid var(--empty);
     margin: 4px;
     color: white;
@@ -36,15 +53,15 @@ body {
     font-size: 2.4rem;
 }
 
-.box.empty {
+.letterTile.empty {
     background: var(--empty);
 }
 
-.box.wrong {
+.letterTile.wrong {
     background: var(--wrong);
 }
 
-.box.right {
+.letterTile.right {
     background: var(--right);
 }
 
@@ -63,3 +80,38 @@ body {
         transform: scaleX(1);
     }
 }
+
+footer{
+    height: 30%;
+    padding-top: 50px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin: 0.1rem 1rem;
+}
+
+footer p{
+    font-size: 2rem;
+    color: grey;
+    background-color: black;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+@media only screen and (max-width: 200px){
+    .message-container{
+       padding-left: 50px;
+   }
+   footer{
+       padding-left: 50px;
+   }
+} 
+
+
+@media only screen and (max-width: 400px){
+     .message-container{
+        padding-left: 70px;
+    }
+    footer{
+        padding-left: 70px;
+    }
+} 
